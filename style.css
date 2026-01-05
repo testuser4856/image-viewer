@@ -7,6 +7,8 @@
   --safe-bottom: env(safe-area-inset-bottom);
 }
 
+*{ box-sizing:border-box; }
+
 body{
   margin:0;
   background:var(--bg);
@@ -14,6 +16,13 @@ body{
   font-family:system-ui;
 }
 
+/* ===== レイヤー順を明示 ===== */
+.stage{ z-index:0; }
+.topbar{ z-index:10; }
+.hud{ z-index:20; }
+.modal{ z-index:10000; }
+
+/* ===== Topbar ===== */
 .topbar{
   position:sticky;
   top:0;
@@ -33,6 +42,7 @@ body{
   padding:8px 12px;
 }
 
+/* ===== Library ===== */
 .view{padding:12px 12px calc(16px + var(--safe-bottom))}
 .hidden{display:none}
 
@@ -47,6 +57,7 @@ body{
   padding:10px;
 }
 
+/* ===== Reader ===== */
 .stage{
   position:fixed;
   inset:0;
@@ -77,6 +88,7 @@ body{
   align-items:center;
 }
 
+/* ===== Modal ===== */
 .modal{
   position:fixed;
   inset:0;
@@ -85,43 +97,32 @@ body{
   justify-content:center;
   align-items:flex-start;
   padding-top:60px;
-  z-index:1000;
 }
+
 .modalCard{
   background:#222;
   padding:12px;
   border-radius:12px;
   width:90%;
   max-width:500px;
-  pointer-events:auto;   /* ←重要 */
+  position:relative;
+  pointer-events:auto;
 }
+
 .modalHeader{
   display:flex;
   justify-content:space-between;
-}
-/* クリック不能対策：モーダルを最前面＆クリック有効に固定 */
-.modal{
-  z-index: 10000;
-  pointer-events: auto;
+  align-items:center;
 }
 
-.modalCard{
-  position: relative;
-  z-index: 10001;
-  pointer-events: auto;
-}
-
-/* 念のため、ヘッダはモーダルより下に固定 */
-.topbar{
-  z-index: 100;
-}
-body.modal-open .topbar,
+/* ===== モーダル表示中は背面を完全無効 ===== */
 body.modal-open .stage,
+body.modal-open .topbar,
 body.modal-open .hud{
-  pointer-events: none;
+  pointer-events:none;
 }
 
 body.modal-open .modal,
 body.modal-open .modal *{
-  pointer-events: auto;
+  pointer-events:auto;
 }

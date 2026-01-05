@@ -9,12 +9,13 @@ let current = {
   margin:8
 };
 
-/* ---------- IndexedDB ---------- */
+/* ===== IndexedDB ===== */
 const DB_NAME="viewerDB", DB_VER=2;
+
 function openDB(){
   return new Promise((res,rej)=>{
     const r=indexedDB.open(DB_NAME,DB_VER);
-    r.onupgradeneeded=e=>{
+    r.onupgradeneeded=()=>{
       const d=r.result;
       d.createObjectStore("books",{keyPath:"id"});
       const p=d.createObjectStore("pages",{keyPath:"pid"});
@@ -27,6 +28,7 @@ function openDB(){
     r.onerror=()=>rej(r.error);
   });
 }
+
 const tx=(s,m="readonly")=>db.transaction(s,m).objectStore(s);
 const getAll=(s,i,k)=>new Promise(r=>{
   const req=i?tx(s).index(i).getAll(k):tx(s).getAll();
@@ -38,13 +40,13 @@ const put=(s,v)=>new Promise(r=>{
   t.oncomplete=r;
 });
 
-/* ---------- 起動 ---------- */
+/* ===== 起動 ===== */
 (async()=>{
   db=await openDB();
   renderLibrary();
 })();
 
-/* ---------- 本棚 ---------- */
+/* ===== 本棚 ===== */
 async function renderLibrary(){
   const books=await getAll("books");
   const grid=$("#libraryGrid");
@@ -58,7 +60,7 @@ async function renderLibrary(){
   }
 }
 
-/* ---------- 取り込み ---------- */
+/* ===== 取り込み ===== */
 $("#btnImport").onclick=()=>$("#filePicker").click();
 $("#filePicker").onchange=async e=>{
   const files=[...e.target.files].sort((a,b)=>a.name.localeCompare(b.name));
@@ -74,14 +76,15 @@ $("#filePicker").onchange=async e=>{
   renderLibrary();
 };
 
-/* ---------- Reader ---------- */
+/* ===== Reader ===== */
 async function openBook(id){
   current.bookId=id;
   current.pages=(await getAll("pages","byBook",id)).sort((a,b)=>a.index-b.index);
-  const prog=await new Promise(r=>tx("progress").get(id).onsuccess=e=>r(e.target.result));
-  current.index=prog?.lastIndex||0;
+  const p=await new Promise(r=>tx("progress").get(id).onsuccess=e=>r(e.target.result));
+  current.index=p?.lastIndex||0;
   $("#libraryView").classList.add("hidden");
   $("#readerView").classList.remove("hidden");
+  $("#readerHud").classList.remove("hidden");
   renderPage();
 }
 
@@ -95,13 +98,13 @@ function renderPage(){
   put("progress",{bookId:current.bookId,lastIndex:current.index});
 }
 
-/* ---------- 操作 ---------- */
+/* ===== 操作 ===== */
 $("#readerStage").onclick=e=>{
   const w=window.innerWidth;
   if(e.clientX<w*0.3)prev();
   else if(e.clientX>w*0.7)next();
-  else toggleHud();
 };
+
 function next(){ if(current.index<current.pages.length-1){current.index++;renderPage();}}
 function prev(){ if(current.index>0){current.index--;renderPage();}}
 
@@ -124,42 +127,4 @@ function applyFit(){
   if(current.fit==="fitWidth"){
     img.style.width="100%";img.style.height="auto";
   }else if(current.fit==="fitHeight"){
-    img.style.height="100%";img.style.width="auto";
-  }else{
-    img.style.width="auto";img.style.height="auto";
-  }
-  $("#readerStage").style.padding=current.margin+"px";
-}
-
-/* ---------- しおり ---------- */
-$("#btnBookmark").onclick=async()=>{
-  const note=prompt("メモ","");
-  await put("bookmarks",{id:crypto.randomUUID(),bookId:current.bookId,index:current.index,note});
-  alert("追加しました");
-};
-$("#btnBookmarks").onclick=async()=>{
-  document.body.classList.add("modal-open");
-  const list=$("#bmList");
-  list.innerHTML="";
-  const bms=await getAll("bookmarks","byBook",current.bookId);
-  for(const b of bms){
-    const d=document.createElement("div");
-    d.textContent=`${b.index+1}p ${b.note||""}`;
-    d.onclick=()=>{current.index=b.index;renderPage();$("#bmModal").classList.add("hidden");};
-    list.appendChild(d);
-  }
-  $("#bmModal").classList.remove("hidden");
-};
-$("#btnBmClose").onclick=()=>{
-  document.body.classList.remove("modal-open");
-  $("#bmModal").classList.add("hidden");
-}
-
-/* ---------- HUD ---------- */
-function toggleHud(){
-  $("#readerHud").classList.toggle("hidden");
-}
-$("#btnBack").onclick=()=>{
-  $("#readerView").classList.add("hidden");
-  $("#libraryView").classList.remove("hidden");
-};
+    img.style.height="100%";
