@@ -44,7 +44,6 @@ body{
 
 /* ===== Library ===== */
 .view{padding:12px 12px calc(16px + var(--safe-bottom))}
-.hidden{display:none}
 
 .grid{
   display:grid;
@@ -126,3 +125,4 @@ body.modal-open .modal,
 body.modal-open .modal *{
   pointer-events:auto;
 }
+.hidden{display:none}
