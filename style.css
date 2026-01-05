@@ -83,7 +83,9 @@ body{
   background:rgba(0,0,0,0.6);
   display:flex;
   justify-content:center;
+  align-items:flex-start;
   padding-top:60px;
+  z-index:1000;
 }
 .modalCard{
   background:#222;
@@ -91,6 +93,7 @@ body{
   border-radius:12px;
   width:90%;
   max-width:500px;
+  pointer-events:auto;   /* ←重要 */
 }
 .modalHeader{
   display:flex;
