@@ -99,3 +99,19 @@ body{
   display:flex;
   justify-content:space-between;
 }
+/* クリック不能対策：モーダルを最前面＆クリック有効に固定 */
+.modal{
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+.modalCard{
+  position: relative;
+  z-index: 10001;
+  pointer-events: auto;
+}
+
+/* 念のため、ヘッダはモーダルより下に固定 */
+.topbar{
+  z-index: 100;
+}
