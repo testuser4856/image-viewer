@@ -115,3 +115,13 @@ body{
 .topbar{
   z-index: 100;
 }
+body.modal-open .topbar,
+body.modal-open .stage,
+body.modal-open .hud{
+  pointer-events: none;
+}
+
+body.modal-open .modal,
+body.modal-open .modal *{
+  pointer-events: auto;
+}

@@ -138,6 +138,7 @@ $("#btnBookmark").onclick=async()=>{
   alert("追加しました");
 };
 $("#btnBookmarks").onclick=async()=>{
+  document.body.classList.add("modal-open");
   const list=$("#bmList");
   list.innerHTML="";
   const bms=await getAll("bookmarks","byBook",current.bookId);
@@ -149,7 +150,10 @@ $("#btnBookmarks").onclick=async()=>{
   }
   $("#bmModal").classList.remove("hidden");
 };
-$("#btnBmClose").onclick=()=>$("#bmModal").classList.add("hidden");
+$("#btnBmClose").onclick=()=>{
+  document.body.classList.remove("modal-open");
+  $("#bmModal").classList.add("hidden");
+}
 
 /* ---------- HUD ---------- */
 function toggleHud(){
