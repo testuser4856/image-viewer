@@ -12,9 +12,20 @@
 
 <header class="topbar">
   <div class="brand">Viewer</div>
+
+  <select id="selSort" class="select">
+    <option value="updatedDesc">更新（新→古）</option>
+    <option value="titleAsc">タイトル（A→Z）</option>
+  </select>
+
+  <button id="btnBackup" class="btn">バックアップ</button>
+  <button id="btnRestore" class="btn">復元</button>
+  <input id="restorePicker" type="file" accept="application/json" hidden />
+
   <button id="btnImport" class="btn">取り込み</button>
   <input id="filePicker" type="file" multiple accept="image/*" hidden />
 </header>
+
 
 <main id="libraryView" class="view">
   <div class="sectionTitle">本棚</div>
@@ -28,7 +39,8 @@
 
   <div id="readerHud" class="hud hidden">
     <button id="btnBack" class="btn">← 本棚</button>
-
+	<button id="btnBookmarkAdd" class="btn">しおり＋</button>
+	<button id="btnBookmarks" class="btn">しおり</button>
     <div class="hudCenter">
       <input id="rangePage" type="range" min="1" max="1" value="1" />
       <div id="pageInfo"></div>

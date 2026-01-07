@@ -125,4 +125,16 @@ body.modal-open .modal,
 body.modal-open .modal *{
   pointer-events:auto;
 }
-.hidden{display:none}
+
+.select{
+  background:#2b2b2e;
+  color:var(--fg);
+  border:0;
+  border-radius:12px;
+  padding:8px 10px;
+}
+.cardTitle{ font-weight:800; margin-bottom:6px; }
+.cardMeta{ color:var(--muted); font-size:12px; display:flex; gap:10px; flex-wrap:wrap; }
+.cardActions{ margin-top:10px; display:flex; gap:8px; justify-content:flex-end; }
+
+.hidden{ display:none !important; }
