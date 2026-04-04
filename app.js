@@ -9,6 +9,7 @@ let current = {
   index: 0,
   fit: "fitWidth",
   margin: 8,
+  viewMode: "normal",
 };
 
 const DB_NAME = "viewerDB";
@@ -132,12 +133,50 @@ function toggleHud() {
   else hud.classList.add("hidden");
 }
 
-/* ===== Reader render ===== */
 function applyFit() {
   const img = $("#readerImg");
   const stage = $("#readerStage");
   if (!img || !stage) return;
 
+  const margin = `${Number(current.margin) || 0}px`;
+
+  // いったんリセット
+  img.style.maxWidth = "100%";
+  img.style.maxHeight = "100%";
+  img.style.width = "auto";
+  img.style.height = "auto";
+  img.style.objectFit = "contain";
+  img.style.objectPosition = "center center";
+  stage.style.overflow = "hidden";
+
+  // 表示モード優先
+  if (current.viewMode === "full") {
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "contain";
+    stage.style.padding = "0px";
+    return;
+  }
+
+  if (current.viewMode === "split-left") {
+    img.style.width = "200%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover";
+    img.style.objectPosition = "left center";
+    stage.style.padding = "0px";
+    return;
+  }
+
+  if (current.viewMode === "split-right") {
+    img.style.width = "200%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover";
+    img.style.objectPosition = "right center";
+    stage.style.padding = "0px";
+    return;
+  }
+
+  // 通常モード
   if (current.fit === "fitWidth") {
     img.style.width = "100%";
     img.style.height = "auto";
@@ -149,7 +188,7 @@ function applyFit() {
     img.style.height = "auto";
   }
 
-  stage.style.padding = `${Number(current.margin) || 0}px`;
+  stage.style.padding = margin;
 }
 
 function renderPage() {
@@ -308,6 +347,10 @@ async function openBook(bookId) {
 
   const prog = await get("progress", bookId);
   current.index = Math.min(Math.max(prog?.lastIndex ?? 0, 0), pages.length - 1);
+
+  current.viewMode = "normal";
+  const selViewMode = $("#selViewMode");
+  if (selViewMode) selViewMode.value = "normal";
 
   showReader();
   renderPage();
@@ -477,6 +520,12 @@ function wireEvents() {
     if (!files || !files.length) return;
     await importFiles(files);
     e.target.value = "";
+  });
+
+  $("#selViewMode")?.addEventListener("change", (e) => {
+    current.viewMode = e.target.value;
+    applyFit();
+    showHudTemporarily();
   });
 
   $("#selSort")?.addEventListener("change", () => renderLibrary());
