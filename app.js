@@ -530,9 +530,26 @@ function wireEvents() {
 
   $("#selSort")?.addEventListener("change", () => renderLibrary());
 
-  // Reader: tap zones (left/right) + center HUD toggle
   $("#readerStage")?.addEventListener("click", (e) => {
     const w = window.innerWidth;
+
+    // 分割モードなら左右切替優先
+    if (current.viewMode === "split-left" || current.viewMode === "split-right") {
+      if (current.viewMode === "split-left") {
+        current.viewMode = "split-right";
+      } else {
+        current.viewMode = "split-left";
+      }
+
+      // UIも同期
+      const sel = $("#selViewMode");
+      if (sel) sel.value = current.viewMode;
+
+      applyFit();
+      return;
+    }
+
+    // 通常ページ送り
     if (e.clientX < w * 0.3) prevPage();
     else if (e.clientX > w * 0.7) nextPage();
     else toggleHud();
